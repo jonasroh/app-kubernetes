@@ -2,11 +2,10 @@ From golang:latest
 
 workdir /app
 
-COPY go.mod ./
-COPY main.go ./
+COPY web-app ./
 
-run go build -o main.go ./
+run go build -o web-app/main.go ./
 
-EXPOSE 8080
+EXPOSE 8000
 
-CMD ["./main.go"]
+CMD ["web-app/main.go"]
