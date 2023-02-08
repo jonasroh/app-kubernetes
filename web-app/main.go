@@ -1,11 +1,24 @@
 package main
 
 import (
+	"database/sql"
 	"net/http"
 	"text/template"
+	_ "github.com/lib/pq"
 )
 
+func conectaComBancoDeDados() *sql.DB {
+	conexao := "user=postgres dbname=jonas_loja password=784512 host=localhost sslmode=disable"
+	db, err := sql.Open("postgres", conexao)
+	if err != nil {
+		panic(err.Error())
+	}
+	return db
+}
+
+
 type Produto struct {
+	Id int
 	Nome       string
 	Descricao  string
 	Preco      float64
@@ -19,15 +32,41 @@ ParseGlob para especificar o caminho
 var temp = template.Must(template.ParseGlob("templates/*.html"))
 
 func main() {
+	db := conectaComBancoDeDados()
+	defer db.Close()
 	http.HandleFunc("/", index)
 	http.ListenAndServe(":8000", nil)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	produtos := []Produto{
-		{Nome: "Camiseta", Descricao: "Manga longa", Preco: 49, Quantidade: 5},
-		{"Camiseta", "Oversized", 79, 3},
-		{"Calça", "Jeans", 109, 7},
+	db := conectaComBancoDeDados()	
+
+	selectDeTodosOsProdutos, err := db.Query("select * from produtos")
+	if err != nil {
+		panic(err.Error())
 	}
+
+	p := Produto{}
+	produtos := []Produto{}
+
+	for selectDeTodosOsProdutos.Next(){
+		var id, quantidade int
+		var nome, descricao string
+		var preco float64
+
+		err = selectDeTodosOsProdutos.Scan(&id, &nome, &descricao, &preco, &quantidade)
+		if err != nil {
+			panic(err.Error())
+		}
+
+		p.Nome = nome
+		p.Descricao = descricao
+		p.Preco = preco
+		p.Quantidade = quantidade
+
+		produtos = append(produtos, p)
+	}
+
 	temp.ExecuteTemplate(w, "Index", produtos)
+	defer db.Close()
 }
