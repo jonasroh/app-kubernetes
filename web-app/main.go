@@ -4,11 +4,12 @@ import (
 	"database/sql"
 	"net/http"
 	"text/template"
+
 	_ "github.com/lib/pq"
 )
 
 func conectaComBancoDeDados() *sql.DB {
-	conexao := "user=postgres dbname=jonas_loja password=784512 host=localhost sslmode=disable"
+	conexao := "user=postgres port=5432 dbname=jonas_loja password=postgres host=postgres-svc sslmode=disable"
 	db, err := sql.Open("postgres", conexao)
 	if err != nil {
 		panic(err.Error())
@@ -16,9 +17,8 @@ func conectaComBancoDeDados() *sql.DB {
 	return db
 }
 
-
 type Produto struct {
-	Id int
+	Id         int
 	Nome       string
 	Descricao  string
 	Preco      float64
@@ -39,7 +39,7 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	db := conectaComBancoDeDados()	
+	db := conectaComBancoDeDados()
 
 	selectDeTodosOsProdutos, err := db.Query("select * from produtos")
 	if err != nil {
@@ -49,7 +49,7 @@ func index(w http.ResponseWriter, r *http.Request) {
 	p := Produto{}
 	produtos := []Produto{}
 
-	for selectDeTodosOsProdutos.Next(){
+	for selectDeTodosOsProdutos.Next() {
 		var id, quantidade int
 		var nome, descricao string
 		var preco float64

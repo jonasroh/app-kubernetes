@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: go-app
-    image: jonasroh/go-app:v1
+    image: jonasroh/go-app:v3.8.4
 ---
 kind: Service
 apiVersion: v1
@@ -17,7 +17,7 @@ spec:
   selector:
     app: go-app
   ports:
-  - port: 8080
+  - port: 8000
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -28,10 +28,10 @@ spec:
   - http:
       paths:
       - pathType: Prefix
-        path: "/blog"
+        path: "/loja"
         backend:
           service:
             name: go-service
             port:
-              number: 8080
+              number: 8000
 
