@@ -7,7 +7,7 @@ metadata:
 spec:
   containers:
   - name: go-app
-    image: jonasroh/go-app:v3.8.4
+    image: jonasroh/go-app:v4
 ---
 kind: Service
 apiVersion: v1
@@ -28,7 +28,7 @@ spec:
   - http:
       paths:
       - pathType: Prefix
-        path: "/loja"
+        path: /
         backend:
           service:
             name: go-service
