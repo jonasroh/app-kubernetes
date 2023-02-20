@@ -7,7 +7,7 @@ import (
 )
 
 func ConectaComBancoDeDados() *sql.DB {
-	conexao := "user=postgres dbname=jonas_loja password=784512 host=localhost sslmode=disable"
+	conexao := "user=postgres dbname=jonas_loja password=postgres host=postgres-svc sslmode=disable"
 	db, err := sql.Open("postgres", conexao)
 	if err != nil {
 		panic(err.Error())
